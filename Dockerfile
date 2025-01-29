@@ -1,42 +1,35 @@
-# Basis-Image mit Node.js (für code-server)
-FROM codercom/code-server:latest
+# Basisimage: Ubuntu 22.04 für ARM64 (Colima auf M1/M2 Mac)
+FROM ubuntu:22.04
 
-# Setze Root-Benutzer für Installationen
-USER root
+# Environment Variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV USERNAME=developer
 
-# Arbeitsverzeichnis erstellen
-WORKDIR /app
-
-# Installiere Python, pip, und virtuelle Umgebungen
+# Install system dependencies (inkl. GUI und Python)
 RUN apt-get update && apt-get install -y \
-    python3 python3-pip python3-venv tini && \
-    ln -s /usr/bin/python3 /usr/bin/python && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    python3 python3-pip \
+    xfce4 xfce4-goodies x11vnc xvfb \
+    curl libx11-6 libxkbfile1 libsecret-1-0 \
+    dbus-x11 xterm \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Erstelle eine virtuelle Python-Umgebung
-RUN python3 -m venv /venv && \
-    /venv/bin/pip install --upgrade pip
+# Code-Server installieren (ARM-Version)
+RUN curl -fsSL https://github.com/coder/code-server/releases/download/v4.14.1/code-server-4.14.1-linux-arm64.tar.gz | tar -xz -C /usr/local && \
+    mv /usr/local/code-server-4.14.1-linux-arm64 /usr/local/code-server && \
+    ln -s /usr/local/code-server/bin/code-server /usr/bin/code-server
 
-# Kopiere lokale Dateien und requirements.txt ins Image
-COPY requirements.txt /app/requirements.txt
+# VNC Passwort setzen (leer -> kein Passwort)
+RUN mkdir -p ~/.vnc && echo "" > ~/.vnc/passwd
 
-# Installiere die Python-Abhängigkeiten in der virtuellen Umgebung
-RUN /venv/bin/pip install -r /app/requirements.txt
+# Volume für User-Daten
+VOLUME /home
 
-# Setze die virtuelle Umgebung in den PATH
-ENV PATH="/venv/bin:$PATH"
+# Startup-Skript erstellen
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Kopiere restliche Dateien ins Image
-COPY . /app
+# Port für Code-Server & VNC
+EXPOSE 8080 5900
 
-# Ändere Besitz des Arbeitsverzeichnisses auf den Standardbenutzer "coder"
-RUN chown -R coder:coder /app
-
-# Setze den Benutzer zurück auf "coder" (Standardbenutzer des Images)
-USER coder
-
-# Exponiere die Ports für code-server und JupyterLab
-EXPOSE 8080 8888
-
-# Standardkommando: Starte code-server und JupyterLab mit tini
-CMD ["/usr/bin/tini", "--", "sh", "-c", "code-server --bind-addr 0.0.0.0:8080 --auth none . & jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root"]
+# Starten mit eigenem Skript
+CMD ["/entrypoint.sh"]

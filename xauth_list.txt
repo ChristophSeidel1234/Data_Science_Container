@@ -1,0 +1,4 @@
+MacBook-Air-von-Christoph.local/unix:0  MIT-MAGIC-COOKIE-1  0d29064205c5e5b5c978a34b946d4048
+macbook-air-von-christoph.local:0  MIT-MAGIC-COOKIE-1  0d29064205c5e5b5c978a34b946d4048
+10.120.241.137:0  MIT-MAGIC-COOKIE-1  0d29064205c5e5b5c978a34b946d4048
+macbook-air-von-christoph.local:0  MIT-MAGIC-COOKIE-1  0d29064205c5e5b5c978a34b946d4048

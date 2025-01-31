@@ -1,28 +1,34 @@
 #!/bin/bash
 
-# Neuen User anlegen, falls nicht vorhanden
-if [ ! -d "/home/$USERNAME" ]; then
-    useradd -m -s /bin/bash $USERNAME
-    echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-    mkdir -p /home/$USERNAME/.vnc
+USERNAME=developer
+
+# Ensure proper permissions for home directory
+mkdir -p /home/$USERNAME
+chown -R $USERNAME:$USERNAME /home/$USERNAME
+
+# Set up VNC password
+mkdir -p /home/$USERNAME/.vnc
+if [ ! -f "/home/$USERNAME/.vnc/passwd" ]; then
+    echo "changeme" | vncpasswd -f > /home/$USERNAME/.vnc/passwd
+    chmod 600 /home/$USERNAME/.vnc/passwd
 fi
 
-# Arbeitsverzeichnis setzen
-cd /home/$USERNAME
+# Install Python packages
+sudo -u $USERNAME pip3 install --user -r /home/$USERNAME/requirements.txt
 
-# Falls keine requirements.txt existiert, Standard erstellen
-if [ ! -f "/home/$USERNAME/requirements.txt" ]; then
-    echo "# Python Packages" > /home/$USERNAME/requirements.txt
-fi
-
-# Falls die Python-Module noch nicht installiert sind, nachinstallieren
-pip3 install --user -r /home/$USERNAME/requirements.txt
-
-# Code-Server starten
+# Start code-server
 sudo -u $USERNAME code-server --bind-addr 0.0.0.0:8080 --auth none &
 
-# VNC-Server für UI starten (z.B. mit XFCE)
+# Start Xvfb and wait for it
 export DISPLAY=:1
 Xvfb :1 -screen 0 1280x720x16 &
-xfce4-session & x11vnc -display :1 -nopw -forever &
-wait
+while [ ! -e /tmp/.X11-unix/X1 ]; do
+    sleep 0.5
+done
+
+# Start XFCE and VNC
+sudo -u $USERNAME xfce4-session &
+x11vnc -display :1 -forever -shared -rfbauth /home/${USERNAME}/.vnc/passwd &
+
+# Keep container alive
+tail -f /dev/null

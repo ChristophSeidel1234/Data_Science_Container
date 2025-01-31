@@ -1,0 +1,14 @@
+[2025-01-29T13:35:17.638Z] info  code-server 4.14.1 5c199629305a0b935b4388b7db549f77eae82b5a
+[2025-01-29T13:35:17.638Z] info  Using user-data-dir ~/.local/share/code-server
+[2025-01-29T13:35:17.656Z] info  Using config file ~/.config/code-server/config.yaml
+[2025-01-29T13:35:17.656Z] info  HTTP server listening on http://0.0.0.0:8080/
+[2025-01-29T13:35:17.656Z] info    - Authentication is disabled
+[2025-01-29T13:35:17.656Z] info    - Not serving HTTPS
+[2025-01-29T13:35:17.656Z] info  Session server listening on /home/developer/.local/share/code-server/code-server-ipc.sock
+[2025-01-29T13:41:51.885Z] info  code-server 4.14.1 5c199629305a0b935b4388b7db549f77eae82b5a
+[2025-01-29T13:41:51.885Z] info  Using user-data-dir ~/.local/share/code-server
+[2025-01-29T13:41:51.893Z] info  Using config file ~/.config/code-server/config.yaml
+[2025-01-29T13:41:51.893Z] info  HTTP server listening on http://0.0.0.0:8080/
+[2025-01-29T13:41:51.893Z] info    - Authentication is disabled
+[2025-01-29T13:41:51.894Z] info    - Not serving HTTPS
+[2025-01-29T13:41:51.894Z] info  Session server listening on /home/developer/.local/share/code-server/code-server-ipc.sock
